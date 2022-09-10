@@ -1,6 +1,6 @@
 {
   "name": "ulog",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": {
     "name": "John Patrick Madrigal",
     "email": "jp.madrigal07@gmail.com",
@@ -16,7 +16,8 @@
     "test": "jest",
     "format": "prettier --write \"./**/*.{js,jsx,ts,tsx,json}\"",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "release": "standard-version"
   },
   "dependencies": {
     "@react-navigation/bottom-tabs": "^6.3.3",
