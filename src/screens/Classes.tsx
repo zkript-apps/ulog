@@ -5,12 +5,13 @@ import { useNavigation } from '@react-navigation/native';
 
 const Classes = () => {
   const navigation: any = useNavigation();
+  const flatListPadding = { paddingBottom: 100 };
   return (
     <View>
       <Header />
       <View>
         <FlatList
-          contentContainerStyle={{ paddingBottom: 100 }}
+          contentContainerStyle={flatListPadding}
           data={[
             { key: 'Devin' },
             { key: 'Dan' },

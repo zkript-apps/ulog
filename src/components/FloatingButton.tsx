@@ -7,7 +7,7 @@ const FloatingButton = () => {
     <TouchableHighlight
       activeOpacity={0.6}
       underlayColor="#DDDDDD"
-      onPress={() => console.log('yessir1')}
+      onPress={() => console.log('click!')}
     >
       <View
         className="bg-[#3ABFF8] w-12 h-12 rounded-full absolute shadow-sm right-7 bottom-28"

@@ -8,6 +8,7 @@ const ClassStudents = () => {
   const navigation: any = useNavigation();
   const route = useRoute();
   const { title } = route.params as any;
+  const flatListPadding = { paddingBottom: 100 };
   return (
     <View>
       <PageHeader
@@ -25,7 +26,7 @@ const ClassStudents = () => {
       />
       <View>
         <FlatList
-          contentContainerStyle={{ paddingBottom: 100 }}
+          contentContainerStyle={flatListPadding}
           data={[
             { key: 'Devin' },
             { key: 'Dan' },
@@ -47,7 +48,7 @@ const ClassStudents = () => {
           ]}
           renderItem={({ item }) => {
             return (
-              <TouchableOpacity onPress={() => console.log('yessir', item)}>
+              <TouchableOpacity onPress={() => console.log('click!', item)}>
                 <View className="bg-white py-3 px-3 my-1 mx-2 rounded-md">
                   <Text className="text-black font-bold">{item.key}</Text>
                   <Text className="text-gray-500">0 students</Text>

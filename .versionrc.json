@@ -1,0 +1,16 @@
+{
+  "types": [
+    { "type": "feat", "section": "Features" },
+    { "type": "fix", "section": "Bug Fixes" },
+    { "type": "build", "hidden": true },
+    { "type": "chore", "hidden": true },
+    { "type": "docs", "hidden": true },
+    { "type": "style", "hidden": true },
+    { "type": "refactor", "hidden": true },
+    { "type": "perf", "hidden": true },
+    { "type": "test", "hidden": true }
+  ],
+  "issueUrlFormat": "https://github.com/jpmadrigal07/lyradig-api/issues/{{id}}",
+  "commitUrlFormat": "https://github.com/jpmadrigal07/lyradig-api/commits/{{hash}}",
+  "compareUrlFormat": "https://github.com/jpmadrigal07/lyradig-api/compare/{{previousTag}}...{{currentTag}}"
+}
