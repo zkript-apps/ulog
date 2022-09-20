@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PageHeader from '../components/PageHeader';
 import { View, TextInput, Text } from 'react-native';
 import VectorIcon from '../components/VectorIcon';
+import useClasses from '../hooks/useClasses';
 
 const AddClass = () => {
-  const [className, setClassName] = useState('');
+  const { addNewClass, className, setClassName } = useClasses();
   return (
     <View>
       <PageHeader
@@ -12,6 +13,7 @@ const AddClass = () => {
         rightButton={
           <VectorIcon name="checkmark-done-outline" size={30} color="#3ABFF8" />
         }
+        rightButtonOnPress={addNewClass}
       />
       <View className="mx-3 mt-5">
         <View className="flex flex-col gap-1">
