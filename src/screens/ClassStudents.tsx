@@ -7,19 +7,19 @@ import VectorIcon from '../components/VectorIcon';
 const ClassStudents = () => {
   const navigation: any = useNavigation();
   const route = useRoute();
-  const { title } = route.params as any;
+  const { name, id } = route.params as any;
   const flatListPadding = { paddingBottom: 100 };
   return (
     <View>
       <PageHeader
-        title={`${title.key} Students`}
+        title={`${name} Students`}
         rightButton={
           <VectorIcon name="person-add-outline" size={20} color="#3ABFF8" />
         }
         rightButtonOnPress={() =>
           navigation.navigate({
-            name: 'AddClassStudent',
-            params: { classId: title },
+            name: 'PickStudent',
+            params: { classId: id, className: name },
           })
         }
         leftButtonText="Back"

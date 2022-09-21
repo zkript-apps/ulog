@@ -143,7 +143,7 @@ const useClasses = () => {
   };
   useEffect(() => {
     getClasses();
-  });
+  }, []);
 
   return {
     addNewClass,
@@ -152,6 +152,7 @@ const useClasses = () => {
     updateClass,
     deleteClass,
     classNames,
+    getClasses,
   };
 };
 

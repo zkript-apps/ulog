@@ -3,8 +3,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import BottomTabs from './BottomTabs';
 import AddClassScreen from './screens/AddClass';
-import ClassStudents from './screens/ClassStudents';
-import AddClassStudent from './screens/AddClassStudent';
+import ClassStudentsScreen from './screens/ClassStudents';
+import AddStudentScreen from './screens/AddStudent';
+import PickStudentScreen from './screens/PickStudent';
 
 const { Navigator, Screen } = createNativeStackNavigator();
 
@@ -19,8 +20,9 @@ const NavigationStack = () => {
       >
         <Screen name="Account" component={BottomTabs} />
         <Screen name="AddClass" component={AddClassScreen} />
-        <Screen name="ClassStudents" component={ClassStudents} />
-        <Screen name="AddClassStudent" component={AddClassStudent} />
+        <Screen name="ClassStudents" component={ClassStudentsScreen} />
+        <Screen name="AddStudent" component={AddStudentScreen} />
+        <Screen name="PickStudent" component={PickStudentScreen} />
       </Navigator>
     </NavigationContainer>
   );

@@ -2,51 +2,46 @@ import React, { useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import Header from '../components/Header';
 import { useNavigation } from '@react-navigation/native';
-import useClasses from '../hooks/useClasses';
+import useStudents from '../hooks/useStudents';
 import VectorIcon from '../components/VectorIcon';
 import { useIsFocused } from '@react-navigation/core';
 
-const Classes = () => {
+const Students = () => {
   const isFocused = useIsFocused();
-  const { classNames, getClasses } = useClasses();
+  const { students, getStudents } = useStudents();
   const navigation: any = useNavigation();
   const flatListPadding = { paddingBottom: 100 };
   useEffect(() => {
     if (isFocused) {
-      getClasses();
+      getStudents();
     }
-  }, [isFocused, getClasses]);
+  }, [isFocused, getStudents]);
   return (
     <View>
       <Header
-        title="Classes"
+        title="Students"
         rightButton={
           <VectorIcon name="add-circle-outline" size={30} color="#3ABFF8" />
         }
-        rightButtonOnPress={() => navigation.navigate({ name: 'AddClass' })}
+        rightButtonOnPress={() => navigation.navigate({ name: 'AddStudent' })}
       />
       <View>
-        {classNames.length === 0 ? (
-          <View className="py-3 px-3">
-            <Text className="text-gray-400 italic">No classes found</Text>
+        {students.length === 0 ? (
+          <View className="px-3">
+            <Text className="text-gray-400 italic">No students found</Text>
           </View>
         ) : (
           <FlatList
             contentContainerStyle={flatListPadding}
-            data={classNames}
+            data={students}
             renderItem={({ item }) => {
               return (
-                <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate({
-                      name: 'ClassStudents',
-                      params: { ...item },
-                    })
-                  }
-                >
+                <TouchableOpacity>
                   <View className="bg-white py-3 px-3 my-1 mx-2 rounded-md">
-                    <Text className="text-black font-bold">{item.name}</Text>
-                    <Text className="text-gray-500">0 students</Text>
+                    <Text className="text-black font-bold">
+                      {item.firstName} {item.lastName}
+                    </Text>
+                    <Text className="text-gray-500">{item.studentNumber}</Text>
                   </View>
                 </TouchableOpacity>
               );
@@ -58,4 +53,4 @@ const Classes = () => {
   );
 };
 
-export default Classes;
+export default Students;
