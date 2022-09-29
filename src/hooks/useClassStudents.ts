@@ -1,6 +1,7 @@
 import { Keyboard, ToastAndroid } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
+import { useState, useEffect, useCallback } from 'react';
 
 export interface I_Class_Student {
   id?: string;
@@ -20,56 +21,46 @@ const showToast = (value: string) => {
   ToastAndroid.showWithGravity(value, ToastAndroid.LONG, ToastAndroid.BOTTOM);
 };
 
-const getClassStudentsArr = async () => {
+export const getClassStudentsArr = async () => {
   const classStudentsStr = await AsyncStorage.getItem('classStudents');
   const classStudentsArr = JSON.parse(classStudentsStr || '[]');
-  return classStudentsArr;
-};
-
-const getClassStudentByStudentId = async (studentId: string) => {
-  const classStudentsArr = await getClassStudentsArr();
-  const foundClassStudent = classStudentsArr.find(
-    (item: I_Class_Student) => item.studentId === studentId,
-  );
-  const foundClassStudentIndex = classStudentsArr.findIndex(
-    (item: I_Class_Student) => item.studentId === studentId,
-  );
-  return {
-    foundClassStudent: foundClassStudent,
-    foundClassStudentIndex: foundClassStudentIndex,
-  } as I_Get_Class_Student_Result;
-};
-
-const getClassStudentByClassId = async (classId: string) => {
-  const classStudentsArr = await getClassStudentsArr();
-  const foundClassStudent = classStudentsArr.find(
-    (item: I_Class_Student) => item.classId === classId,
-  );
-  const foundClassStudentIndex = classStudentsArr.findIndex(
-    (item: I_Class_Student) => item.classId === classId,
-  );
-  return {
-    foundClassStudent: foundClassStudent,
-    foundClassStudentIndex: foundClassStudentIndex,
-  } as I_Get_Class_Student_Result;
-};
-
-const getClassStudentById = async (id: string) => {
-  const classStudentsArr = await getClassStudentsArr();
-  const foundClassStudent = classStudentsArr.find(
-    (item: I_Class_Student) => item.id === id,
-  );
-  const foundClassStudentIndex = classStudentsArr.findIndex(
-    (item: I_Class_Student) => item.id === id,
-  );
-  return {
-    foundClassStudent: foundClassStudent,
-    foundClassStudentIndex: foundClassStudentIndex,
-  } as I_Get_Class_Student_Result;
+  return classStudentsArr.filter((item: I_Class_Student) => !item.isDeleted);
 };
 
 const useClassStudent = () => {
-  const addNewClassStudent = async (classId: string, studentId: string) => {
+  const [classStudents, setClassStudents] = useState<I_Class_Student[]>([]);
+  const getClassStudentByClassId = async (classId: string) => {
+    const classStudentsArr = await getClassStudentsArr();
+    const foundClassStudent = classStudentsArr.find(
+      (item: I_Class_Student) => item.classId === classId,
+    );
+    const foundClassStudentIndex = classStudentsArr.findIndex(
+      (item: I_Class_Student) => item.classId === classId,
+    );
+    return {
+      foundClassStudent: foundClassStudent,
+      foundClassStudentIndex: foundClassStudentIndex,
+    } as I_Get_Class_Student_Result;
+  };
+  const getClassStudentById = async (id: string) => {
+    const classStudentsArr = await getClassStudentsArr();
+    const foundClassStudent = classStudentsArr.find(
+      (item: I_Class_Student) => item.id === id,
+    );
+    const foundClassStudentIndex = classStudentsArr.findIndex(
+      (item: I_Class_Student) => item.id === id,
+    );
+    return {
+      foundClassStudent: foundClassStudent,
+      foundClassStudentIndex: foundClassStudentIndex,
+    } as I_Get_Class_Student_Result;
+  };
+  const addNewClassStudent = async (
+    classId: string,
+    studentId: string,
+    successCallback?: Function,
+    showSuccessToast?: boolean,
+  ) => {
     Keyboard.dismiss();
     try {
       if (classId === '' || studentId === '') {
@@ -78,7 +69,7 @@ const useClassStudent = () => {
       const classesArr = await getClassStudentsArr();
       const { foundClassStudent } = await getClassStudentByClassId(classId);
       if (foundClassStudent && foundClassStudent.studentId === studentId) {
-        throw 'Class student already exist';
+        throw 'Student already assigned to this class';
       }
       const toSaveClasses: I_Class_Student[] = [
         ...classesArr,
@@ -91,12 +82,12 @@ const useClassStudent = () => {
       ];
       const toSaveClassesStr = JSON.stringify(toSaveClasses);
       await AsyncStorage.setItem('classStudents', toSaveClassesStr);
-      console.log('Class student add: ', {
-        classId,
-        studentId,
-        createdAt: new Date().toISOString(),
-        id: uuid.v4(),
-      });
+      if (successCallback) {
+        successCallback();
+      }
+      if (showSuccessToast) {
+        showToast('Student added to class');
+      }
     } catch (e) {
       showToast(e as string);
     }
@@ -104,7 +95,7 @@ const useClassStudent = () => {
   const deleteClassStudent = async (id: string) => {
     Keyboard.dismiss();
     try {
-      if (id) {
+      if (!id) {
         throw 'Class student Id is required to delete';
       }
       const classStudentsArr = await getClassStudentsArr();
@@ -122,11 +113,69 @@ const useClassStudent = () => {
     }
   };
 
+  const deleteAllStudentClassById = async (
+    type: 'studentId' | 'classId',
+    id: string,
+  ) => {
+    Keyboard.dismiss();
+    try {
+      if (!id) {
+        throw 'Class student Id is required to delete';
+      }
+      const classStudentsArr = await getClassStudentsArr();
+      const classStudentArrWithoutStudent = classStudentsArr.map(
+        (item: I_Class_Student) => {
+          return id === item[type]
+            ? {
+                ...item,
+                isDeleted: new Date().toISOString(),
+              }
+            : item;
+        },
+      );
+      const updatedClassesStr = JSON.stringify(classStudentArrWithoutStudent);
+      await AsyncStorage.setItem('classStudents', updatedClassesStr);
+    } catch (e) {
+      showToast(e as string);
+    }
+  };
+
+  const getClassStudents = useCallback(
+    async (classId?: string, studentId?: string) => {
+      const classStudentsArr = await getClassStudentsArr();
+      if (classId && !studentId) {
+        const foundClassStudents = classStudentsArr.filter(
+          (item: I_Class_Student) => item.classId === classId,
+        );
+        setClassStudents([...foundClassStudents]);
+      } else if (!classId && studentId) {
+        const foundClassStudents = classStudentsArr.filter(
+          (item: I_Class_Student) => item.studentId === studentId,
+        );
+        setClassStudents([...foundClassStudents]);
+      } else if (classId && studentId) {
+        const foundClassStudents = classStudentsArr.find(
+          (item: I_Class_Student) =>
+            item.studentId === studentId && item.classId === classId,
+        );
+        setClassStudents([...foundClassStudents]);
+      } else if (!classId && !studentId) {
+        setClassStudents([...classStudentsArr]);
+      }
+    },
+    [],
+  );
+
+  useEffect(() => {
+    getClassStudents();
+  }, [getClassStudents]);
+
   return {
-    getClassStudentByStudentId,
-    getClassStudentByClassId,
+    classStudents,
+    getClassStudents,
     addNewClassStudent,
     deleteClassStudent,
+    deleteAllStudentClassById,
   };
 };
 

@@ -8,10 +8,12 @@ type Props = {
   rightButtonText?: string;
   rightButton?: React.ReactNode;
   rightButtonOnPress?: Function;
+  leftButtonOnPress?: Function;
 };
 
 const PageHeader = ({
   leftButtonText = 'Cancel',
+  leftButtonOnPress,
   title,
   rightButton,
   rightButtonOnPress,
@@ -22,7 +24,9 @@ const PageHeader = ({
     <View className="flex flex-row px-3 py-2 items-center">
       <TouchableOpacity
         className="flex-none w-20"
-        onPress={() => navigation.goBack()}
+        onPress={() =>
+          leftButtonOnPress ? leftButtonOnPress() : navigation.goBack()
+        }
       >
         <Text className="text-[#3ABFF8] text-md">{leftButtonText}</Text>
       </TouchableOpacity>

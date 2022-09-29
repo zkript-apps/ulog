@@ -1,12 +1,12 @@
 import { Keyboard, ToastAndroid } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import uuid from 'react-native-uuid';
 import useClassStudent from './useClassStudents';
 
 export interface I_Student {
-  id?: string;
+  id: string;
   firstName: string;
   lastName: string;
   studentNumber: string;
@@ -25,10 +25,10 @@ const showToast = (value: string) => {
   ToastAndroid.showWithGravity(value, ToastAndroid.LONG, ToastAndroid.BOTTOM);
 };
 
-const getStudentsArr = async () => {
+export const getStudentsArr = async () => {
   const studentsStr = await AsyncStorage.getItem('students');
   const studentsArr = JSON.parse(studentsStr || '[]');
-  return studentsArr;
+  return studentsArr.filter((item: I_Student) => !item.isDeleted);
 };
 
 const getStudentById = async (id: string) => {
@@ -59,8 +59,9 @@ const getStudentByNumber = async (studentNumber: string) => {
 
 const useStudents = () => {
   const navigation: any = useNavigation();
-  const { addNewClassStudent } = useClassStudent();
+  const { addNewClassStudent, deleteAllStudentClassById } = useClassStudent();
   const [student, setStudent] = useState<I_Student>({
+    id: '',
     firstName: '',
     lastName: '',
     guardianPhoneNumber: '',
@@ -69,6 +70,7 @@ const useStudents = () => {
   const [students, setStudents] = useState<I_Student[]>([]);
   const resetStudent = () => {
     setStudent({
+      id: '',
       firstName: '',
       lastName: '',
       guardianPhoneNumber: '',
@@ -103,11 +105,6 @@ const useStudents = () => {
       if (classId) {
         addNewClassStudent(classId, recordId as string);
       }
-      console.log('Student add: ', {
-        ...student,
-        createdAt: new Date().toISOString(),
-        id: recordId,
-      });
       showToast('Student added');
       resetStudent();
       if (navigation.canGoBack() && (!classId || !className)) {
@@ -166,7 +163,7 @@ const useStudents = () => {
   const deleteStudent = async (id: string) => {
     Keyboard.dismiss();
     try {
-      if (id) {
+      if (!id) {
         throw 'Student Id is required to delete';
       }
       const studentsArr = await getStudentsArr();
@@ -179,23 +176,22 @@ const useStudents = () => {
       const { foundStudentIndex: studentIndex } = await getStudentById(id);
       studentsArr[studentIndex].isDeleted = new Date().toISOString();
       const updatedClassesStr = JSON.stringify(studentsArr);
-      await AsyncStorage.setItem('classes', updatedClassesStr);
-      showToast('Student updated');
+      await AsyncStorage.setItem('students', updatedClassesStr);
+      deleteAllStudentClassById('studentId', id);
+      showToast('Student deleted');
       resetStudent();
-      if (navigation.canGoBack()) {
-        navigation.goBack();
-      }
+      getStudents();
     } catch (e) {
       showToast(e as string);
     }
   };
-  const getStudents = async () => {
+  const getStudents = useCallback(async () => {
     const studentsArr = await getStudentsArr();
-    setStudents(studentsArr.reverse());
-  };
+    setStudents([...studentsArr.reverse()]);
+  }, []);
   useEffect(() => {
     getStudents();
-  }, []);
+  }, [getStudents]);
 
   return {
     addNewStudent,
