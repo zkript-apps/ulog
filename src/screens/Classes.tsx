@@ -15,7 +15,9 @@ const Classes = () => {
   const navigation: any = useNavigation();
   const flatListPadding = { paddingBottom: 100 };
   useEffect(() => {
-    if (isFocused) { getClasses() }
+    if (isFocused) {
+      getClasses();
+    }
   }, [isFocused, getClasses]);
 
   // const onLongPressHandler = (className: string, classId: string) => {
@@ -32,7 +34,7 @@ const Classes = () => {
   //   );
   // };
 
-  const snapPoints = useMemo(() => ['25%', '50%', '90%'], []);
+  const snapPoints = useMemo(() => ['25%', '90%'], []);
 
   const handlePresentModalPress = useCallback(() => {
     bottomSheetRef.current?.present();
