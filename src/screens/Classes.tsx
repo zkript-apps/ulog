@@ -47,7 +47,7 @@ const Classes = () => {
         {
           text: 'Yes',
           onPress: () => {
-            bottomSheetRef.current?.close();
+            handleClose();
             deleteClass(classId);
           },
         },
@@ -140,14 +140,26 @@ const Classes = () => {
             </TouchableOpacity>
           </View>
           <View className="flex flex-row p-2 gap-2">
-            <View className="flex flex-col gap-2">
+            <Pressable
+              className="flex flex-col gap-2"
+              onPress={() => {
+                handleClose();
+                navigation.navigate({
+                  name: 'EditClass',
+                  params: {
+                    classId: selectedClass?.id,
+                    className: selectedClass?.name,
+                  },
+                });
+              }}
+            >
               <View className="h-9 w-9 bg-blue-600 rounded-full flex justify-center">
                 <View className="ml-2">
                   <VectorIcon name="pencil" size={20} color="#ffffff" />
                 </View>
               </View>
               <Text className="text-xs text-center">Edit</Text>
-            </View>
+            </Pressable>
             <Pressable
               className="flex flex-col gap-2"
               onPress={() =>

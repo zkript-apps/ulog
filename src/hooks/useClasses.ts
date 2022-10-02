@@ -117,7 +117,7 @@ const useClasses = () => {
       classesArr[classIndex].updatedAt = new Date().toISOString();
       const updatedClassesStr = JSON.stringify(classesArr);
       await AsyncStorage.setItem('classes', updatedClassesStr);
-      showToast('Class deleted');
+      showToast('Class updated');
       setClassNameInputData('');
       if (navigation.canGoBack()) {
         navigation.goBack();
