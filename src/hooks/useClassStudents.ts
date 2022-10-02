@@ -55,6 +55,24 @@ const useClassStudent = () => {
       foundClassStudentIndex: foundClassStudentIndex,
     } as I_Get_Class_Student_Result;
   };
+  const getClassStudentByClassIdStudentId = async (
+    classId: string,
+    studentId: string,
+  ) => {
+    const classStudentsArr = await getClassStudentsArr();
+    const foundClassStudent = classStudentsArr.find(
+      (item: I_Class_Student) =>
+        item.classId === classId && item.studentId === studentId,
+    );
+    const foundClassStudentIndex = classStudentsArr.findIndex(
+      (item: I_Class_Student) =>
+        item.classId === classId && item.studentId === studentId,
+    );
+    return {
+      foundClassStudent: foundClassStudent,
+      foundClassStudentIndex: foundClassStudentIndex,
+    } as I_Get_Class_Student_Result;
+  };
   const addNewClassStudent = async (
     classId: string,
     studentId: string,
@@ -108,6 +126,31 @@ const useClassStudent = () => {
         new Date().toISOString();
       const updatedClassesStr = JSON.stringify(classStudentsArr);
       await AsyncStorage.setItem('classStudents', updatedClassesStr);
+    } catch (e) {
+      showToast(e as string);
+    }
+  };
+
+  const deleteClassStudentByClassIdStudentId = async (
+    classId: string,
+    studentId: string,
+  ) => {
+    Keyboard.dismiss();
+    try {
+      if (!classId || !studentId) {
+        throw 'Class Id and student Id is required to delete';
+      }
+      const classStudentsArr = await getClassStudentsArr();
+      const { foundClassStudent, foundClassStudentIndex } =
+        await getClassStudentByClassIdStudentId(classId, studentId);
+      if (foundClassStudent?.isDeleted) {
+        throw 'Class student already deleted';
+      }
+      classStudentsArr[foundClassStudentIndex].isDeleted =
+        new Date().toISOString();
+      const updatedClassesStr = JSON.stringify(classStudentsArr);
+      await AsyncStorage.setItem('classStudents', updatedClassesStr);
+      showToast('Student was removed from this class');
     } catch (e) {
       showToast(e as string);
     }
@@ -176,6 +219,7 @@ const useClassStudent = () => {
     addNewClassStudent,
     deleteClassStudent,
     deleteAllStudentClassById,
+    deleteClassStudentByClassIdStudentId,
   };
 };
 
