@@ -1,17 +1,32 @@
-import React, { useEffect, useRef, useMemo, useCallback } from 'react';
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import React, {
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+  useState,
+} from 'react';
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Pressable,
+  Alert,
+} from 'react-native';
 import Header from '../components/Header';
 import { useNavigation } from '@react-navigation/native';
-import useClasses from '../hooks/useClasses';
+import useClasses, { I_Class } from '../hooks/useClasses';
 import VectorIcon from '../components/VectorIcon';
 import { useIsFocused } from '@react-navigation/core';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { Portal } from '@gorhom/portal';
+import { BottomSheetDefaultBackdropProps } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types';
 
 const Classes = () => {
   const isFocused = useIsFocused();
-  const bottomSheetRef = useRef<BottomSheetModal>(null);
-  const { classNames, getClasses } = useClasses();
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const { classNames, getClasses, deleteClass } = useClasses();
+  const [selectedClass, setSelectedClass] = useState<I_Class>();
   const navigation: any = useNavigation();
   const flatListPadding = { paddingBottom: 100 };
   useEffect(() => {
@@ -20,32 +35,49 @@ const Classes = () => {
     }
   }, [isFocused, getClasses]);
 
-  // const onLongPressHandler = (className: string, classId: string) => {
-  //   Alert.alert(
-  //     'Delete Class',
-  //     `Are you sure you want to delete ${className} class?`,
-  //     [
-  //       {
-  //         text: 'Cancel',
-  //         style: 'cancel',
-  //       },
-  //       { text: 'Yes', onPress: () => deleteClass(classId) },
-  //     ],
-  //   );
-  // };
+  const onLongPressHandler = (className: string, classId: string) => {
+    Alert.alert(
+      'Delete Class',
+      `Are you sure you want to delete ${className} class?`,
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: () => {
+            bottomSheetRef.current?.close();
+            deleteClass(classId);
+          },
+        },
+      ],
+    );
+  };
 
-  const snapPoints = useMemo(() => ['25%', '90%'], []);
+  const snapPoints = useMemo(() => ['1%', '20%'], []);
 
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetRef.current?.present();
+  const handleClose = useCallback(() => {
+    bottomSheetRef.current?.close();
   }, []);
 
   const handleSheetChanges = useCallback((index: number) => {
     bottomSheetRef.current?.snapToIndex(index);
   }, []);
 
+  const renderBackdrop = useCallback(
+    (props: BottomSheetDefaultBackdropProps) => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={0}
+        appearsOnIndex={1}
+        opacity={0.2}
+      />
+    ),
+    [],
+  );
   return (
-    <View className="h-full">
+    <View>
       <Header
         title="Classes"
         rightButton={
@@ -72,9 +104,8 @@ const Classes = () => {
                     })
                   }
                   onLongPress={() => {
-                    handlePresentModalPress();
-                    // handleSheetChanges(2);
-                    // onLongPressHandler(item.name, item.id);
+                    handleSheetChanges(1);
+                    setSelectedClass(item);
                   }}
                 >
                   <View className="bg-white py-3 px-3 my-1 mx-2 rounded-md">
@@ -90,26 +121,50 @@ const Classes = () => {
           />
         )}
       </View>
-      <GestureHandlerRootView>
-        <BottomSheetModal
+      <Portal>
+        <BottomSheet
           ref={bottomSheetRef}
-          enablePanDownToClose={true}
-          enableContentPanningGesture={true}
-          enableHandlePanningGesture={true}
           snapPoints={snapPoints}
+          index={-1}
           onChange={handleSheetChanges}
           // eslint-disable-next-line react-native/no-inline-styles
           handleStyle={{ display: 'none' }}
           // eslint-disable-next-line react-native/no-inline-styles
-          backgroundStyle={{ borderRadius: 0 }}
+          backgroundStyle={{ borderRadius: 8 }}
+          backdropComponent={renderBackdrop}
         >
-          <TouchableOpacity onPress={() => bottomSheetRef.current?.close()}>
-            <View>
-              <Text>Awesome 🎉</Text>
+          <View className="flex flex-row p-3 border-b-[1px] border-gray-100">
+            <Text className="flex-1 text-black">Actions</Text>
+            <TouchableOpacity onPress={() => handleClose()}>
+              <VectorIcon name="close" size={20} color="#cccccc" />
+            </TouchableOpacity>
+          </View>
+          <View className="flex flex-row p-2 gap-2">
+            <View className="flex flex-col gap-2">
+              <View className="h-9 w-9 bg-blue-600 rounded-full flex justify-center">
+                <View className="ml-2">
+                  <VectorIcon name="pencil" size={20} color="#ffffff" />
+                </View>
+              </View>
+              <Text className="text-xs text-center">Edit</Text>
             </View>
-          </TouchableOpacity>
-        </BottomSheetModal>
-      </GestureHandlerRootView>
+            <Pressable
+              className="flex flex-col gap-2"
+              onPress={() =>
+                selectedClass &&
+                onLongPressHandler(selectedClass?.name, selectedClass?.id)
+              }
+            >
+              <View className="h-9 w-9 bg-red-600 rounded-full flex justify-center">
+                <View className="ml-2">
+                  <VectorIcon name="trash" size={20} color="#ffffff" />
+                </View>
+              </View>
+              <Text className="text-xs text-center">Delete</Text>
+            </Pressable>
+          </View>
+        </BottomSheet>
+      </Portal>
     </View>
   );
 };

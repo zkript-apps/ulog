@@ -1,12 +1,15 @@
 import React from 'react';
 import NavigationStack from './src/NavigationStack';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { PortalProvider } from '@gorhom/portal';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const App = () => {
   return (
-    <BottomSheetModalProvider>
-      <NavigationStack />
-    </BottomSheetModalProvider>
+    <GestureHandlerRootView className="flex-1">
+      <PortalProvider>
+        <NavigationStack />
+      </PortalProvider>
+    </GestureHandlerRootView>
   );
 };
 
