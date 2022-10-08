@@ -98,6 +98,14 @@ const Students = () => {
             renderItem={({ item }) => {
               return (
                 <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate({
+                      name: 'StudentProfile',
+                      params: {
+                        ...item,
+                      },
+                    });
+                  }}
                   onLongPress={() => {
                     handleSheetChanges(1);
                     setSelectedStudent(item);
