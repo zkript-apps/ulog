@@ -88,7 +88,7 @@ const Students = () => {
       />
       <View>
         {students.length === 0 ? (
-          <View className="px-3">
+          <View className="py-3 px-3">
             <Text className="text-gray-400 italic">No students found</Text>
           </View>
         ) : (
