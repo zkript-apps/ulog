@@ -141,9 +141,9 @@ const Students = () => {
               <VectorIcon name="close" size={20} color="#cccccc" />
             </TouchableOpacity>
           </View>
-          <View className="flex flex-row p-2 gap-2">
+          <View className="flex flex-row p-2 gap-6">
             <Pressable
-              className="flex flex-col gap-2"
+              className="flex flex-col gap-2 items-center"
               onPress={() => {
                 handleClose();
                 navigation.navigate({
@@ -162,7 +162,7 @@ const Students = () => {
               <Text className="text-xs text-center">Edit</Text>
             </Pressable>
             <Pressable
-              className="flex flex-col gap-2"
+              className="flex flex-col gap-2 items-center"
               onPress={() =>
                 selectedStudent &&
                 onLongPressHandler(

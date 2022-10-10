@@ -139,9 +139,29 @@ const Classes = () => {
               <VectorIcon name="close" size={20} color="#cccccc" />
             </TouchableOpacity>
           </View>
-          <View className="flex flex-row p-2 gap-2">
+          <View className="flex flex-row p-2 gap-6">
             <Pressable
-              className="flex flex-col gap-2"
+              className="flex flex-col gap-2 items-center"
+              onPress={() => {
+                handleClose();
+                navigation.navigate({
+                  name: 'ScanClass',
+                  params: {
+                    classId: selectedClass?.id,
+                    className: selectedClass?.name,
+                  },
+                });
+              }}
+            >
+              <View className="h-9 w-9 bg-green-600 rounded-full flex justify-center">
+                <View className="ml-2">
+                  <VectorIcon name="qr-code" size={20} color="#ffffff" />
+                </View>
+              </View>
+              <Text className="text-xs text-center">Scan</Text>
+            </Pressable>
+            <Pressable
+              className="flex flex-col gap-2 items-center"
               onPress={() => {
                 handleClose();
                 navigation.navigate({
@@ -161,7 +181,7 @@ const Classes = () => {
               <Text className="text-xs text-center">Edit</Text>
             </Pressable>
             <Pressable
-              className="flex flex-col gap-2"
+              className="flex flex-col gap-2 items-center"
               onPress={() =>
                 selectedClass &&
                 onLongPressHandler(selectedClass?.name, selectedClass?.id)

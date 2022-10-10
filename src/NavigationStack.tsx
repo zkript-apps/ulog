@@ -9,6 +9,7 @@ import AddStudentScreen from './screens/AddStudent';
 import EditStudentScreen from './screens/EditStudent';
 import PickStudentScreen from './screens/PickStudent';
 import StudentProfileScreen from './screens/StudentProfile';
+import ScanClassScreen from './screens/ScanClass';
 
 const { Navigator, Screen } = createNativeStackNavigator();
 
@@ -29,6 +30,7 @@ const NavigationStack = () => {
         <Screen name="EditStudent" component={EditStudentScreen} />
         <Screen name="StudentProfile" component={StudentProfileScreen} />
         <Screen name="PickStudent" component={PickStudentScreen} />
+        <Screen name="ScanClass" component={ScanClassScreen} />
       </Navigator>
     </NavigationContainer>
   );
