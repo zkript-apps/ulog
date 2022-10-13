@@ -2,7 +2,6 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ClassesScreen from './screens/Classes';
 import StudentsScreen from './screens/Students';
-import ScanScreen from './screens/Scan';
 import VectorIcon from './components/VectorIcon';
 import { Text } from 'react-native';
 
@@ -53,30 +52,6 @@ function BottomTabs() {
                   }`}
                 >
                   Students
-                </Text>
-              </>
-            );
-          },
-        }}
-      />
-      <Screen
-        name="Scan"
-        component={ScanScreen}
-        options={{
-          tabBarIcon: ({ focused }) => {
-            return (
-              <>
-                <VectorIcon
-                  name="qr-code"
-                  color={focused ? '#3ABFF8' : '#c9c9c9'}
-                  size={22}
-                />
-                <Text
-                  className={`text-[11px] ${
-                    focused ? 'text-[#3ABFF8]' : 'text-[#c9c9c9]'
-                  }`}
-                >
-                  Scan
                 </Text>
               </>
             );
