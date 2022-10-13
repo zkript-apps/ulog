@@ -11,7 +11,7 @@ const ScanClass = () => {
   const route = useRoute();
   const { classId, className } = route.params as any;
   const onSuccess = (e: any) => {
-    addNewAttendance(classId, e.data);
+    addNewAttendance(classId, e.data, className);
   };
   return (
     <View>

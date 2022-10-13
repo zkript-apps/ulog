@@ -1,7 +1,15 @@
-import { Keyboard, ToastAndroid } from 'react-native';
+import {
+  Keyboard,
+  ToastAndroid,
+  NativeModules,
+  PermissionsAndroid,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
 import { useCallback } from 'react';
+import { getStudentsArr, I_Student } from './useStudents';
+import { getClassStudentsArr } from './useClassStudents';
+const DirectSms = NativeModules.DirectSms;
 
 export interface I_Attendance {
   id?: string;
@@ -18,6 +26,30 @@ export interface I_Get_Attendance_Result {
 
 const showToast = (value: string) => {
   ToastAndroid.showWithGravity(value, ToastAndroid.LONG, ToastAndroid.BOTTOM);
+};
+
+const sendDirectSms = async (phoneNumber: string, message: string) => {
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.SEND_SMS,
+      {
+        title: 'YourProject App Sms Permission',
+        message:
+          'YourProject App needs access to your inbox ' +
+          'so you can send messages in background.',
+        buttonNeutral: 'Ask Me Later',
+        buttonNegative: 'Cancel',
+        buttonPositive: 'OK',
+      },
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      DirectSms.sendDirectSms(phoneNumber, message);
+    } else {
+      showToast('SMS permission denied');
+    }
+  } catch (err) {
+    showToast(err as string);
+  }
 };
 
 const useAttendance = () => {
@@ -48,23 +80,32 @@ const useAttendance = () => {
       foundAttendanceIndex: foundAttendanceIndex,
     } as I_Get_Attendance_Result;
   };
-  const addNewAttendance = async (classId: string, studentId: string) => {
+  const addNewAttendance = async (
+    classId: string,
+    studentNumber: string,
+    className: string,
+  ) => {
     Keyboard.dismiss();
     try {
-      if (classId === '' || studentId === '') {
+      if (classId === '' || studentNumber === '') {
         throw 'Required fields are empty';
       }
+      const studentArr = await getStudentsArr();
+      const selectedStudent = studentArr.find(
+        (item: I_Student) => item.studentNumber === studentNumber,
+      );
       const attendanceArr = await getAttendanceArr();
-      const isValidClassStudent = attendanceArr.find(
+      const classStudentArr = await getClassStudentsArr();
+      const isValidClassStudent = classStudentArr.find(
         (item: I_Attendance) =>
-          item.classId === classId || item.studentId === studentId,
+          item.classId === classId || item.studentId === selectedStudent.id,
       );
       if (!isValidClassStudent) {
-        throw 'Student does not registered in this class';
+        throw 'Student is not registered in this class';
       }
       const { foundAttendance } = await getStudentAttendanceToday(
         classId,
-        studentId,
+        selectedStudent.id,
       );
       if (foundAttendance) {
         throw 'Student already have an attendance to this class today';
@@ -73,14 +114,22 @@ const useAttendance = () => {
         ...attendanceArr,
         {
           classId,
-          studentId,
+          studentId: selectedStudent.id,
           createdAt: new Date().toISOString(),
           id: uuid.v4(),
         },
       ];
       const toSaveClassesStr = JSON.stringify(toSaveClasses);
       await AsyncStorage.setItem('attendance', toSaveClassesStr);
-      showToast('Scanned successfully');
+      if (selectedStudent) {
+        sendDirectSms(
+          selectedStudent.guardianPhoneNumber,
+          `${selectedStudent.firstName} ${selectedStudent.lastName} has been recorded as present in subject name ${className}`,
+        );
+        showToast('Scanned successfully');
+      } else {
+        showToast('Student not found');
+      }
     } catch (e) {
       showToast(e as string);
     }
