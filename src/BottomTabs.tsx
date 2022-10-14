@@ -9,8 +9,6 @@ const { Navigator, Screen } = createBottomTabNavigator();
 
 function BottomTabs() {
   return (
-    // FIX DOUBLE SCANNED FOR QR
-    // ADD STUDENT ATTENDANCE PAGE
     <Navigator screenOptions={{ headerShown: false, tabBarShowLabel: false }}>
       <Screen
         name="Class"
