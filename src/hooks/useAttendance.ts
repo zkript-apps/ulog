@@ -6,10 +6,17 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { getStudentsArr, I_Student } from './useStudents';
 import { getClassStudentsArr } from './useClassStudents';
+import { getClassesArr, I_Class } from './useClasses';
+import moment from 'moment';
 const DirectSms = NativeModules.DirectSms;
+
+type I_Student_Attendance = {
+  className: string;
+  createdAt: string;
+};
 
 export interface I_Attendance {
   id?: string;
@@ -53,6 +60,12 @@ const sendDirectSms = async (phoneNumber: string, message: string) => {
 };
 
 const useAttendance = () => {
+  const [studentAttendance, setStudentAttendance] = useState<
+    I_Student_Attendance[]
+  >([]);
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
+    null,
+  );
   const getAttendanceArr = async () => {
     const attendanceStr = await AsyncStorage.getItem('attendance');
     const attendanceArr = JSON.parse(attendanceStr || '[]');
@@ -150,9 +163,45 @@ const useAttendance = () => {
     [],
   );
 
+  const getStudentAttendanceByStudentId = useCallback(
+    async (studentId: string) => {
+      const attendanceArr = await getAttendanceArr();
+      const classesArr: I_Class[] = await getClassesArr();
+      const foundAttendance = attendanceArr.filter(
+        (item: I_Attendance) => item.studentId === studentId,
+      );
+      const studentAttendanceFormatted = foundAttendance.map(
+        (item: I_Attendance) => {
+          const foundClass = classesArr.find(
+            (classItem: I_Class) => classItem.id === item.classId,
+          );
+          const date = moment(item.createdAt).fromNow();
+          return {
+            className: foundClass?.name,
+            createdAt: date,
+          };
+        },
+      );
+      setStudentAttendance(studentAttendanceFormatted.reverse());
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (selectedStudentId) {
+      getStudentAttendanceByStudentId(selectedStudentId);
+    }
+  }, [selectedStudentId, getStudentAttendanceByStudentId]);
+
+  const getStudentAttendance = (studentId: string) => {
+    setSelectedStudentId(studentId);
+  };
+
   return {
     getClassAttendanceByDate,
     addNewAttendance,
+    studentAttendance,
+    getStudentAttendance,
   };
 };
 

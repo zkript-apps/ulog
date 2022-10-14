@@ -50,7 +50,7 @@ const getClassByName = async (className: string) => {
   } as I_Get_Class_Result;
 };
 
-const getClassById = async (id: string) => {
+export const getClassById = async (id: string) => {
   const classesArr = await getClassesArr();
   const foundClass = classesArr.find((item: I_Class) => item.id === id);
   const foundClassIndex: number = classesArr.findIndex(
