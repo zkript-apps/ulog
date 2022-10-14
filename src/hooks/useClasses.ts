@@ -28,7 +28,7 @@ const showToast = (value: string) => {
   ToastAndroid.showWithGravity(value, ToastAndroid.LONG, ToastAndroid.BOTTOM);
 };
 
-const getClassesArr = async () => {
+export const getClassesArr = async () => {
   const classesStr = await AsyncStorage.getItem('classes');
   const classesArr = JSON.parse(classesStr || '[]');
   return classesArr.filter((item: I_Class) => !item.isDeleted);

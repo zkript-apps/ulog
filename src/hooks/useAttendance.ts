@@ -59,21 +59,23 @@ const useAttendance = () => {
     return attendanceArr.filter((item: I_Attendance) => !item.isDeleted);
   };
   const getStudentAttendanceToday = async (
-    studentId: string,
     classId: string,
+    studentId: string,
   ) => {
     const attendanceArr = await getAttendanceArr();
     const foundAttendance = attendanceArr.find(
       (item: I_Attendance) =>
-        item.classId === classId ||
-        item.studentId === studentId ||
-        new Date(item.createdAt || '') === new Date(),
+        item.classId === classId &&
+        item.studentId === studentId &&
+        new Date(item.createdAt || '').toISOString().substring(0, 10) ===
+          new Date().toISOString().substring(0, 10),
     );
     const foundAttendanceIndex = attendanceArr.findIndex(
       (item: I_Attendance) =>
-        item.classId === classId ||
-        item.studentId === studentId ||
-        new Date(item.createdAt || '') === new Date(),
+        item.classId === classId &&
+        item.studentId === studentId &&
+        new Date(item.createdAt || '').toISOString().substring(0, 10) ===
+          new Date().toISOString().substring(0, 10),
     );
     return {
       foundAttendance: foundAttendance,
@@ -115,7 +117,7 @@ const useAttendance = () => {
         {
           classId,
           studentId: selectedStudent.id,
-          createdAt: new Date().toISOString(),
+          createdAt: new Date(),
           id: uuid.v4(),
         },
       ];
@@ -126,7 +128,7 @@ const useAttendance = () => {
           selectedStudent.guardianPhoneNumber,
           `${selectedStudent.firstName} ${selectedStudent.lastName} has been recorded as present in subject name ${className}`,
         );
-        showToast('Scanned successfully');
+        showToast('Student recorded as present');
       } else {
         showToast('Student not found');
       }
