@@ -95,6 +95,16 @@ const useAttendance = () => {
       foundAttendanceIndex: foundAttendanceIndex,
     } as I_Get_Attendance_Result;
   };
+  const sendSms = (
+    guardianPhoneNumber: string,
+    fullName: string,
+    className: string,
+  ) => {
+    sendDirectSms(
+      guardianPhoneNumber,
+      `${fullName} has been recorded as present in subject name ${className}`,
+    );
+  };
   const addNewAttendance = async (
     classId: string,
     studentNumber: string,
@@ -123,6 +133,11 @@ const useAttendance = () => {
         selectedStudent.id,
       );
       if (foundAttendance) {
+        sendSms(
+          selectedStudent.guardianPhoneNumber,
+          `${selectedStudent.firstName} ${selectedStudent.lastName}`,
+          className,
+        );
         throw 'Student already have an attendance to this class today';
       }
       const toSaveClasses: I_Attendance[] = [
@@ -137,9 +152,10 @@ const useAttendance = () => {
       const toSaveClassesStr = JSON.stringify(toSaveClasses);
       await AsyncStorage.setItem('attendance', toSaveClassesStr);
       if (selectedStudent) {
-        sendDirectSms(
+        sendSms(
           selectedStudent.guardianPhoneNumber,
-          `${selectedStudent.firstName} ${selectedStudent.lastName} has been recorded as present in subject name ${className}`,
+          `${selectedStudent.firstName} ${selectedStudent.lastName}`,
+          className,
         );
         showToast('Student recorded as present');
       } else {
