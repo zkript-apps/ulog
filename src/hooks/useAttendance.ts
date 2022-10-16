@@ -123,10 +123,14 @@ const useAttendance = () => {
       const classStudentArr = await getClassStudentsArr();
       const isValidClassStudent = classStudentArr.find(
         (item: I_Attendance) =>
-          item.classId === classId || item.studentId === selectedStudent.id,
+          item.classId === classId && item.studentId === selectedStudent.id,
       );
       if (!isValidClassStudent) {
-        throw 'Student is not registered in this class';
+        throw `${
+          selectedStudent
+            ? selectedStudent.firstName + ' ' + selectedStudent.lastName
+            : studentNumber
+        } is not registered in this class`;
       }
       const { foundAttendance } = await getStudentAttendanceToday(
         classId,
@@ -138,7 +142,7 @@ const useAttendance = () => {
           `${selectedStudent.firstName} ${selectedStudent.lastName}`,
           className,
         );
-        throw 'Student already have an attendance to this class today';
+        throw `${selectedStudent.firstName} ${selectedStudent.lastName} already have an attendance to this class today`;
       }
       const toSaveClasses: I_Attendance[] = [
         ...attendanceArr,
@@ -157,9 +161,11 @@ const useAttendance = () => {
           `${selectedStudent.firstName} ${selectedStudent.lastName}`,
           className,
         );
-        showToast('Student recorded as present');
+        showToast(
+          `${selectedStudent.firstName} ${selectedStudent.lastName} recorded as present`,
+        );
       } else {
-        showToast('Student not found');
+        showToast(`"${studentNumber}" not found`);
       }
     } catch (e) {
       showToast(e as string);

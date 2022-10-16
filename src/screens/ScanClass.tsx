@@ -22,7 +22,7 @@ const ScanClass = () => {
     if (String(e.data).length <= 12 && !isValidUrl(e.data)) {
       addNewAttendance(classId, String(e.data), className);
     } else {
-      showToast('Invalid Student Number');
+      showToast(`"${String(e.data)}" is an invalid Student Number`);
     }
     delayScanStatus();
   };
