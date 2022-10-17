@@ -10,7 +10,7 @@
     { "type": "perf", "hidden": true },
     { "type": "test", "hidden": true }
   ],
-  "issueUrlFormat": "https://github.com/jpmadrigal07/lyradig-api/issues/{{id}}",
-  "commitUrlFormat": "https://github.com/jpmadrigal07/lyradig-api/commits/{{hash}}",
-  "compareUrlFormat": "https://github.com/jpmadrigal07/lyradig-api/compare/{{previousTag}}...{{currentTag}}"
+  "issueUrlFormat": "https://github.com/zkript-apps/ulog/issues/{{id}}",
+  "commitUrlFormat": "https://github.com/zkript-apps/ulog/commits/{{hash}}",
+  "compareUrlFormat": "https://github.com/zkript-apps/ulog/compare/{{previousTag}}...{{currentTag}}"
 }

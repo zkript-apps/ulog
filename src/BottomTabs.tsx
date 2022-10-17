@@ -1,7 +1,8 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ClassesScreen from './screens/Classes';
-import ScanScreen from './screens/Scan';
+import StudentsScreen from './screens/Students';
+import AboutScreen from './screens/About';
 import VectorIcon from './components/VectorIcon';
 import { Text } from 'react-native';
 
@@ -18,7 +19,7 @@ function BottomTabs() {
             return (
               <>
                 <VectorIcon
-                  name="people"
+                  name="md-book"
                   color={focused ? '#3ABFF8' : '#c9c9c9'}
                   size={22}
                 />
@@ -35,14 +36,14 @@ function BottomTabs() {
         }}
       />
       <Screen
-        name="Scan"
-        component={ScanScreen}
+        name="Student"
+        component={StudentsScreen}
         options={{
           tabBarIcon: ({ focused }) => {
             return (
               <>
                 <VectorIcon
-                  name="qr-code"
+                  name="people"
                   color={focused ? '#3ABFF8' : '#c9c9c9'}
                   size={22}
                 />
@@ -51,7 +52,31 @@ function BottomTabs() {
                     focused ? 'text-[#3ABFF8]' : 'text-[#c9c9c9]'
                   }`}
                 >
-                  Scan
+                  Students
+                </Text>
+              </>
+            );
+          },
+        }}
+      />
+      <Screen
+        name="About"
+        component={AboutScreen}
+        options={{
+          tabBarIcon: ({ focused }) => {
+            return (
+              <>
+                <VectorIcon
+                  name="information-circle"
+                  color={focused ? '#3ABFF8' : '#c9c9c9'}
+                  size={22}
+                />
+                <Text
+                  className={`text-[11px] ${
+                    focused ? 'text-[#3ABFF8]' : 'text-[#c9c9c9]'
+                  }`}
+                >
+                  About
                 </Text>
               </>
             );
